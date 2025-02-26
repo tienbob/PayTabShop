@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Checkout</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h2>Checkout</h2>
+    <h3>Order Summary</h3>
+    <p th:text="'Product: ' + ${product.name}"></p>
+    <p th:text="'Quantity: ' + ${quantity}"></p>
+    <p th:text="'Price: $' + ${#numbers.formatDecimal(product.price,1,2)}"></p>
+    <p th:text="'Total: $' + ${#numbers.formatDecimal(product.price * quantity,1,2)}"></p>
+
+    <form id="checkout-form">
+        <div class="form-group">
+            <label for="customer_name">Name:</label>
+            <input type="text" class="form-control" id="customer_name" name="customer_name" required>
+        </div>
+        <div class="form-group">
+            <label for="customer_email">Email:</label>
+            <input type="email" class="form-control" id="customer_email" name="customer_email" required>
+        </div>
+        <div class="form-group">
+            <label for="shipping_address">Shipping Address:</label>
+            <input type="text" class="form-control" id="shipping_address" name="shipping_address" required>
+        </div>
+        <div class="form-group">
+            <label for="payment_option">Payment Option:</label>
+            <select class="form-control" id="payment_option" name="payment_option">
+                <option value="ship">Ship to Address</option>
+                <option value="pickup">Pick Up</option>
+            </select>
+        </div>
+        <input type="hidden" id="productId" name="productId" th:value="${product.id}">
+        <input type="hidden" id="quantity" name="quantity" th:value="${quantity}">
+        <button type="submit" class="btn btn-primary">Pay with PayTabs</button>
+    </form>
+
+    <div id="payment-form-container">
+        <!-- PayTabs iFrame will be loaded here -->
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="/static/js/checkout.js"></script>
+</body>
+</html>

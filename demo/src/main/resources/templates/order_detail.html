@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Order Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h2>Order Details</h2>
+    <hr/>
+    <p th:text="'Order ID: ' + ${order.id}"></p>
+    <p th:text="'Customer Name: ' + ${order.customerName}"></p>
+    <p th:text="'Customer Email: ' + ${order.customerEmail}"></p>
+    <p th:text="'Order Date: ' + ${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm:ss')}"></p>
+    <p th:text="'Order Status: ' + ${order.status}"></p>
+    <p th:text="'Shipping Address: ' + ${order.shippingAddress}"></p>
+
+    <h3>Order Items</h3>
+    <ul>
+        <li th:each="item : ${order.orderItems}"
+            th:text="${item.product.name} + ' x ' + ${item.quantity} + ' - $' + ${#numbers.formatDecimal(item.product.price * item.quantity, 1, 2)}">
+        </li>
+    </ul>
+
+    <h3>Payment Details</h3>
+    <div th:if="${order.payment != null}">
+        <p th:text="'Payment Date: ' + ${#temporals.format(order.payment.paymentDate, 'yyyy-MM-dd HH:mm:ss')}"></p>
+        <p th:text="'Amount: $' + ${#numbers.formatDecimal(order.payment.amount, 1, 2)}"></p>
+        <p th:text="'Payment Method: ' + ${order.payment.paymentMethod}"></p>
+        <p th:text="'Transaction ID: ' + ${order.payment.transactionId}"></p>
+
+        <h4>Payment Request Payload</h4>
+        <pre th:text="${order.payment.requestPayload}"></pre>
+
+        <h4>Payment Response Payload</h4>
+        <pre th:text="${order.payment.responsePayload}"></pre>
+
+        <div th:if="${order.status.toString() == 'REFUNDED'}">
+            <h3>Refund History</h3>
+            <div th:each="refund : ${order.payment.refunds}">
+                <p th:text="'Refund Date: ' + ${#temporals.format(refund.refundDate, 'yyyy-MM-dd HH:mm:ss')}"></p>
+                <p th:text="'Refund Amount: $' + ${#numbers.formatDecimal(refund.refundAmount, 1, 2)}"></p>
+
+                <h4>Refund Request Payload</h4>
+                <pre th:text="${refund.requestPayload}"></pre>
+
+                <h4>Refund Response Payload</h4>
+                <pre th:text="${refund.responsePayload}"></pre>
+            </div>
+        </div>
+    </div>
+    <div th:else>
+        <p>No payment information available.</p>
+    </div>
+
+    <a th:href="@{/my_orders}" class="btn btn-secondary">Back to My Orders</a>
+</div>
+</body>
+</html>

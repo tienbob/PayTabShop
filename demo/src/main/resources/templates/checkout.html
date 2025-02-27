@@ -33,6 +33,21 @@
                 <option value="pickup">Pick Up</option>
             </select>
         </div>
+
+        <!-- Card Details Input Fields -->
+        <div class="form-group">
+            <label for="cardNumber">Card Number:</label>
+            <input type="text" class="form-control" id="cardNumber" name="cardNumber">
+        </div>
+        <div class="form-group">
+            <label for="expiryDate">Expiry Date:</label>
+            <input type="text" class="form-control" id="expiryDate" name="expiryDate">
+        </div>
+        <div class="form-group">
+            <label for="cvv">CVV:</label>
+            <input type="text" class="form-control" id="cvv" name="cvv">
+        </div>
+
         <input type="hidden" id="productId" name="productId" th:value="${product.id}">
         <input type="hidden" id="quantity" name="quantity" th:value="${quantity}">
         <button type="submit" class="btn btn-primary">Pay with PayTabs</button>
@@ -44,6 +59,65 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="/static/js/checkout.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#checkout-form').submit(function(event) {
+            event.preventDefault();
+
+            const customerName = $('#customer_name').val();
+            const customerEmail = $('#customer_email').val();
+            const shippingAddress = $('#shipping_address').val();
+            const paymentOption = $('#payment_option').val();
+            const productId = $('#productId').val();
+            const quantity = $('#quantity').val();
+
+            // Get card details
+            const cardNumber = $('#cardNumber').val();
+            const expiryDate = $('#expiryDate').val();
+            const cvv = $('#cvv').val();
+
+            const formData = {
+                customerName: customerName,
+                customerEmail: customerEmail,
+                shippingAddress: shippingAddress,
+                paymentOption: paymentOption,
+                productId: productId,
+                quantity: quantity,
+                cardNumber: cardNumber, // Add card number
+                expiryDate: expiryDate,   // Add expiry date
+                cvv: cvv                // Add cvv
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/checkout', // Your Spring Boot endpoint
+                data: formData,
+                success: function(data) {
+                    if (data && data.redirect_url) { // Check for paymentUrl
+                        // Construct the iFrame URL
+                        var iframeUrl = data.redirect_url;
+
+                        // Create the iFrame dynamically
+                        var iframe = document.createElement('iframe');
+                        iframe.src = iframeUrl;
+                        iframe.style.width = '100%';
+                        iframe.style.height = '600px'; // Adjust the height as needed
+                        iframe.style.border = '0';  // Remove border if you want
+
+                        // Append the iFrame to the container
+                        $('#payment-form-container').empty().append(iframe);
+
+                    } else {
+                        alert('Error: Could not retrieve payment request payload.');
+                    }
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                    alert('Error: ' + error.responseText); // Display server-side error messages
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

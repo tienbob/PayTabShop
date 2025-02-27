@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Orders</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1>My Orders</h1>
+    <hr/>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Customer Name</th>
+            <th>Order Date</th>
+            <th>Status</th>
+            <th>Total Amount</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.id}"></td>
+            <td th:text="${order.customerName}"></td>
+            <td th:text="${@dateUtils.format(order.orderDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:text="${order.status}"></td>
+            <td th:if="${order.payment != null}" th:text="${#numbers.formatDecimal(order.payment.amount,1,2)}"></td>
+            <td th:if="${order.payment == null}">No Payment Info</td>
+            <td>
+                <a th:href="@{/order_details/{orderId}(orderId=${order.id})}" class="btn btn-info btn-sm">Details</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/}" class="btn btn-secondary">Continue Shopping</a>
+</div>
+</body>
+</html>

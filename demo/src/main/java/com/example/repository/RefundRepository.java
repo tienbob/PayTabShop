@@ -1,4 +1,3 @@
-// src/main/java/com/example/paytabsshop/repository/RefundRepository.java
 package com.example.repository;
 
 import com.example.model.Refund;

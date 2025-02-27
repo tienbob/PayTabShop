@@ -1,4 +1,3 @@
-// src/main/java/com/example/paytabsshop/controller/OrderController.java
 package com.example.controller;
 
 import com.example.model.*;
@@ -15,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,52 +76,6 @@ public class OrderController {
         model.addAttribute("product", product);
         model.addAttribute("quantity", quantity);
         return "checkout";
-    }
-
-    @PostMapping("/checkout")
-    public ResponseEntity<?> createPaymentRequest(
-            @RequestParam String customerName,
-            @RequestParam String customerEmail,
-            @RequestParam String shippingAddress,
-            @RequestParam String paymentOption,
-            @RequestParam Long productId,
-            @RequestParam Integer quantity,
-            Model model) {
-
-        Product product = productRepository.findById(productId).orElse(null);
-        if (product == null) {
-            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
-        }
-
-        Order order = new Order();
-        order.setCustomerName(customerName);
-        order.setCustomerEmail(customerEmail);
-        order.setShippingAddress(shippingAddress);
-        //Order Status Set to Pending by Default
-        //Create Order Items
-        OrderItem orderItem = new OrderItem();
-        orderItem.setProduct(product);
-        orderItem.setQuantity(quantity);
-        orderItem.setOrder(order);
-
-        order.setOrderItems(List.of(orderItem));
-        //Calcuate the Amount
-        Double amount = product.getPrice() * quantity;
-
-        Payment payment = paymentService.createPayment(order, amount);
-
-        orderRepository.save(order);
-        // Create PayTabs payment request payload
-        Map<String, Object> payment_request_payload = paymentService.generatePaymentRequestPayload(order, amount);
-        payment_request_payload.put("return", "/payment_success/" + order.getId());
-        payment_request_payload.put("callback", "/payment_callback/" + order.getId());
-        // Store the payment request payload in the database
-        payment.setRequestPayload(paymentService.convertToJson(payment_request_payload));
-
-        order.setPayment(payment);
-        orderRepository.save(order);
-        // Return the payment request payload as JSON for the AJAX request
-        return new ResponseEntity<>(payment_request_payload, HttpStatus.OK);
     }
 
 

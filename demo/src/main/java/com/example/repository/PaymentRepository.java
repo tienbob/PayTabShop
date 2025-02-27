@@ -1,4 +1,3 @@
-// src/main/java/com/example/paytabsshop/repository/PaymentRepository.java
 package com.example.repository;
 
 import com.example.model.Payment;
